@@ -3,6 +3,7 @@ from flask import Flask
 from .config import config_by_name
 from .extensions import db, migrate
 from .main import main_bp
+from .health import health_bp
 
 
 def create_app(config_name):
@@ -14,5 +15,6 @@ def create_app(config_name):
     migrate.init_app(app, db)
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(health_bp)
     
     return app
