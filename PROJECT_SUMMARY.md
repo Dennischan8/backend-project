@@ -13,10 +13,11 @@
 - Settings come from `.env` (`DATABASE_URL`, `JWT_SECRET`); `.env` is gitignored, `.env.example` is committed
 - Dev DB: SQLite at `instance/dev.db`
 - Blueprints so far: `main_bp` in `backend_project/main.py` (no routes yet) and `health_bp` in `backend_project/health.py` (`GET /health`)
-- Models file: not created yet (planned: `backend_project/models.py`, imported where the app loads so Flask-Migrate sees it)
+- Models file: `backend_project/models.py` with `User` (`id`, `email` unique and indexed, `password_hash`, `created_at`); imported inside the factory after `db.init_app(app)` so Flask-Migrate sees it
+- Migrations: `migrations/` exists and is committed; first migration `a94178aec5c4` creates the `users` table and has been applied to `instance/dev.db`
 - Auth and trails blueprints: not created yet (planned from the endpoint table)
-- Migrations: Flask-Migrate is wired in; confirm whether `flask db init` has been run and `migrations/` is committed
+- Next: password hashing helpers, then `POST /auth/register` and `POST /auth/login`
 
 ## Git
 - Unit 1 work is on `unit1-setup`, committed and pushed to `origin/unit1-setup`
-- Unit 2 branch: not created yet (suggested: `feature/unit-2-auth`)
+- Unit 2 branch: `feature/unit-2-auth`, pushed to `origin/feature/unit-2-auth` (tracking set up)
