@@ -8,7 +8,7 @@ load_dotenv()  # must run before the classes below read os.environ
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET = os.environ.get("JWT_SECRET")
-
+    JWT_LIFETIME_SECONDS = int(os.environ.get("JWT_LIFETIME_SECONDS", "3600"))
 
 class DevelopmentConfig(Config):
     DEBUG = True
