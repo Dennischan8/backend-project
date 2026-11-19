@@ -31,3 +31,29 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.email}>"
+
+class Trail(db.Model):
+    __tablename__ = "trails"
+
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
+    )
+    name = db.Column(db.String(120), nullable=False)
+    location = db.Column(db.String(120), nullable=True)
+    distance_miles = db.Column(db.Float, nullable=True)
+    difficulty = db.Column(db.String(20), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    priority = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=db.false()
+    )
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    owner = db.relationship("User", backref=db.backref("trails", lazy=True))
+
+    def __repr__(self):
+        return f"<Trail {self.name}>"
