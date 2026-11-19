@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
-
+from functools import wraps
 import jwt
-from flask import Blueprint, current_app, jsonify, request
-
+from flask import Blueprint, g, current_app, jsonify, request
+from .auth_utils import error_response, token_required
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 
@@ -11,9 +11,6 @@ from .models import User
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-
-def error_response(error, message, status):
-    return jsonify({"error": error, "message": message}), status
 
 
 @auth_bp.route("/register", methods=["POST"])
@@ -92,3 +89,20 @@ def login():
     token = jwt.encode(payload, secret, algorithm="HS256")
 
     return jsonify({"access_token": token}), 200
+
+
+@auth_bp.route("/me", methods=["GET"])
+@token_required
+def me():
+    user = g.current_user
+    
+    created_at = user.created_at
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+
+    return jsonify({
+        "id": user.id,
+        "email": user.email,
+        "role": user.role,
+        "created_at": created_at.isoformat(),
+    }), 200
