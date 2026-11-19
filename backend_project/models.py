@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from .extensions import db
 
 
@@ -14,6 +16,18 @@ class User(db.Model):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+    role = db.Column(
+        db.String(20),
+        nullable=False,
+        default="user",
+        server_default="user",
+    )
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, candidate_password):
+        return check_password_hash(self.password_hash, candidate_password)
 
     def __repr__(self):
         return f"<User {self.email}>"
