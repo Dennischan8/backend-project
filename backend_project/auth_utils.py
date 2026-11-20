@@ -23,6 +23,8 @@ def token_required(f):
                 parts[1], current_app.config["JWT_SECRET"], algorithms=["HS256"]
             )
             user = db.session.get(User, int(payload["sub"]))
+        except jwt.ExpiredSignatureError:
+            return error_response("unauthorized", "token has expired", 401)
         except (jwt.InvalidTokenError, KeyError, ValueError):
             return error_response("unauthorized", "missing or invalid token", 401)
 
