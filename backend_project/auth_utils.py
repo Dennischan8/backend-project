@@ -35,3 +35,12 @@ def token_required(f):
         return f(*args, **kwargs)
 
     return wrapper
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if g.current_user.role != "admin":
+            return error_response("forbidden", "admin access required", 403)
+        return f(*args, **kwargs)
+
+    return wrapper
