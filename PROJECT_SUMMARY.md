@@ -30,6 +30,11 @@
 - Roles: `user` (default) and `admin`. The API never writes `role`; admins are promoted directly in the database.
 - No server-side session or revocation state, so logout is just the client discarding its token. Expiry limits how long a stolen token is usable.
 - All errors use `{"error": "<code>", "message": "..."}` (login's generic 401 is the one exception, with no `message`).
+- `GET /auth/me`:
+  - Missing or bad token → `401` with `{"error": "unauthorized", "message": "missing or invalid token"}`
+  - Valid token → `200` with user JSON (`id`, `email`, `role`, `created_at`)
+- `GET /admin/ping`:
+  - Valid non-admin user token → `403` with `{"error": "forbidden", "message": "admin access required"}`
 
 ## Routes and files (all in `backend_project/`)
 - `auth.py` (`auth_bp`, `/auth`): `POST /register`, `POST /login`, `GET /me`, `PATCH /me` (allowlist: only `email`)
