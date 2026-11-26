@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 from .config import config_by_name
 from .extensions import db, migrate
@@ -12,7 +12,11 @@ from .users import users_bp
 
 def create_app(config_name="development"):
     app = Flask(__name__)
-
+    
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "not_found", "message": "resource not found"}), 404
+    
     app.config.from_object(config_by_name[config_name])
 
     if not app.config.get("JWT_SECRET"):

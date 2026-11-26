@@ -21,7 +21,7 @@ Health check, expect 200:
 curl -i http://localhost:5000/health
 
 Register, expect 201 (400 invalid body, 409 duplicate email):
-curl -i -X POST http://localhost:5000/auth/register -H "Content-Type: application/json" -d '{"email": "hiker3@example.com", "password": "longenough3"}'
+curl -i -X POST http://localhost:5000/auth/register -H "Content-Type: application/json" -d '{"email": "hiker6@example.com", "password": "longenough6"}'
 
 Log in, expect 200 with access_token:
 curl -i -X POST http://localhost:5000/auth/login -H "Content-Type: application/json" -d '{"email": "hiker1@example.com", "password": "longenough"}'

@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash
 
 from .auth_utils import error_response
 from .extensions import db
@@ -29,18 +28,20 @@ def register():
     if password is None or (isinstance(password, str) and not password):
         return error_response("validation_error", "password is required", 400)
 
-    if not isinstance(email, str) or "@" not in email:
-        return error_response("validation_error", "email must be a valid email address", 400)
+    if not isinstance(email, str) or "@" not in email or len(email.strip()) > 255:
+        return error_response("validation_error", "email must be a valid email address (max 255 characters)", 400)
 
-    if not isinstance(password, str) or len(password) < 8:
-        return error_response("validation_error", "password must be at least 8 characters", 400)
-
+    if not isinstance(password, str) or len(password) < 8 or len(password) > 128:
+        return error_response("validation_error", "password must be between 8 and 128 characters", 400)
+        
     email = email.strip().lower()
 
     if User.query.filter_by(email=email).first():
         return error_response("validation_error", "email already taken", 409)
 
-    user = User(email=email, password_hash=generate_password_hash(password))
+
+    user = User(email=email)
+    user.set_password(password)
     db.session.add(user)
 
     try:
