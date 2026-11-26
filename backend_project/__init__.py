@@ -7,6 +7,7 @@ from .main import main_bp
 from .auth import auth_bp
 from .trails import trails_bp
 from .admin import admin_bp
+from .users import users_bp
 
 
 def create_app(config_name="development"):
@@ -27,5 +28,6 @@ def create_app(config_name="development"):
     app.register_blueprint(auth_bp)
     app.register_blueprint(trails_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(users_bp)
 
     return app
