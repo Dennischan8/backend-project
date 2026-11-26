@@ -74,16 +74,45 @@ def create_trail():
 
     return jsonify(trail_to_dict(trail)), 201
 
+def parse_positive_int(name, default, maximum=None):
+    raw = request.args.get(name)
+    if raw is None:
+        return default, None
+    try:
+        value = int(raw)
+    except ValueError:
+        return None, f"{name} must be an integer"
+    if value < 1:
+        return None, f"{name} must be at least 1"
+    if maximum is not None and value > maximum:
+        return None, f"{name} must be at most {maximum}"
+    return value, None
+
 
 @trails_bp.route("", methods=["GET"])
 @token_required
 def list_trails():
-    trails = (
+    page, error = parse_positive_int("page", 1)
+    if error:
+        return error_response("bad_request", error, 400)
+
+    per_page, error = parse_positive_int("per_page", 10, maximum=50)
+    if error:
+        return error_response("bad_request", error, 400)
+
+    pagination = (
         Trail.query.filter_by(owner_id=g.current_user.id)
-        .order_by(Trail.priority.desc(), Trail.created_at.desc())
-        .all()
+        .order_by(Trail.id.asc())
+        .paginate(page=page, per_page=per_page, error_out=False)
     )
-    return jsonify([trail_to_dict(t) for t in trails]), 200
+
+    return jsonify({
+        "items": [trail_to_dict(t) for t in pagination.items],
+        "page": page,
+        "per_page": per_page,
+        "total": pagination.total,
+        "pages": pagination.pages,
+    }), 200
 
 UPDATABLE_FIELDS = {"name", "location", "distance_miles", "difficulty", "notes", "priority"}
 
