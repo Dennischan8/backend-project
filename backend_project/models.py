@@ -23,6 +23,8 @@ class User(db.Model):
         server_default="user",
     )
 
+    trails = db.relationship("Trail", back_populates="owner", lazy=True)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -53,7 +55,7 @@ class Trail(db.Model):
         default=lambda: datetime.now(timezone.utc),
     )
 
-    owner = db.relationship("User", backref=db.backref("trails", lazy=True))
+    owner = db.relationship("User", back_populates="trails")
 
     def __repr__(self):
         return f"<Trail {self.name}>"
